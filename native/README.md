@@ -5,16 +5,16 @@ binary in this package can be independently verified and rebuilt.
 
 ## What it compiles
 
-- **`falcon/`** — the Algorand Falcon-1024 C library
+- **`falcon/`**: the Algorand Falcon-1024 C library
   ([github.com/algorand/falcon](https://github.com/algorand/falcon)), vendored
   verbatim. MIT licensed, Copyright (c) 2017-2020 Falcon Project (see
   `falcon/LICENSE-falcon.txt`). This is the entire cryptographic core.
-- **`falcon_wasm.c`** — a thin wrapper (AlgoVoi, Apache-2.0) exposing a
+- **`falcon_wasm.c`**: a thin wrapper (AlgoVoi, Apache-2.0) exposing a
   deterministic seeded keygen and compressed sign/verify that match Algorand's
   AVM `falcon_verify` opcode.
 
-Nothing else is involved. There is no AGPL-licensed tooling in this build path:
-the sources above are the only inputs, and `build.sh` is our own.
+These sources are the only inputs and `build.sh` is our own, so the binary is
+fully reproducible from the files in this directory.
 
 ## Build
 

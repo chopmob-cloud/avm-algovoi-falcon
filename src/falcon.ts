@@ -42,7 +42,7 @@ export async function initFalcon(wasmBinary: ArrayBuffer | Uint8Array, expectedH
 }
 
 function mod() {
-  if (!_module) throw new Error("Falcon not initialised — call initFalcon(wasmBinary) first");
+  if (!_module) throw new Error("Falcon not initialised: call initFalcon(wasmBinary) first");
   return _module;
 }
 

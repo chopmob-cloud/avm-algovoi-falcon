@@ -60,10 +60,9 @@ is redistributable, including in commercial and closed-source products, provided
 the MIT copyright and permission notice ship with it (see `NOTICE`).
 
 The TypeScript in this package and the `falcon_wasm.c` wrapper are Apache-2.0
-(AlgoVoi). Note: the wasm is built with an Emscripten build script that lives in
-an AGPL-licensed tooling repo, but that tooling is **not** compiled into the
-binary; only the MIT C sources are. Do not redistribute that AGPL build tooling
-inside a product.
+(AlgoVoi). The binary is built only from the MIT C sources above, using the
+reproducible script in `native/` (see [`native/README.md`](native/README.md)),
+so you can recompile and verify it yourself.
 
 ## Build and test
 

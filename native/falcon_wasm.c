@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 AlgoVoi
 /**
  * Falcon-1024 WASM wrapper for Algorand (deterministic mode).
  *
