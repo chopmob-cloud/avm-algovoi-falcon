@@ -1,8 +1,44 @@
 # algovoi-falcon
 
-**Falcon-1024 (FIPS 206) keys and Algorand post-quantum accounts.** Keygen,
-deterministic sign/verify, and `falcon_verify` LogicSig address derivation, in a
+**Falcon-1024 (FIPS 206) keys, post-quantum accounts and chain-neutral
+attestations.** Keygen, deterministic sign/verify, `falcon_verify` LogicSig
+address derivation for Algorand, and a chain-neutral attestation layer that binds
+a post-quantum signature to an action on the settlement chain and verifies it offline. A
 small standalone library with no wallet, no vault, and no host-specific code.
+
+## Covering other chains
+
+On-chain Falcon verification only exists where a chain has a native verifier.
+Algorand has the `falcon_verify` opcode, so a Falcon public key can back a real
+spendable account (a LogicSig). Most chains do not have such an opcode, and
+verifying a lattice signature inside a smart contract is prohibitively expensive.
+So the library offers two surfaces:
+
+- **Native PQC accounts** (`deriveFalconAddress`, txn-group helpers): where the
+  chain verifies Falcon on-chain. Algorand today; an AVM chain such as VOI is a
+  drop-in once its opcode is confirmed.
+- **Chain-neutral attestations** (`attest`, `verifyAttestation`): a Falcon key
+  signs the RFC 8785 (JCS) canonical bytes of a payload that binds the action to a
+  chain, an account and a nonce. Anchor it in a transaction note, memo, calldata
+  or log. A relying party recomputes the bytes and checks the signature fully
+  offline, so this is chain-neutral: the attestation verifies offline regardless of the settlement chain, with no on-chain Falcon verifier required.
+
+```ts
+import { initFalcon, falconKeygen, attest, verifyAttestation, bindAction } from "algovoi-falcon";
+
+await initFalcon(wasmBytes);
+const { pk, sk } = falconKeygen();
+
+const payload = bindAction({ chain: "base", address: "0x...", action: "pay", nonce: 1, amount: 2500000, recipient: "0x..." });
+const att = await attest(sk, pk, payload);      // { payload, alg, kid, sig }
+
+const verdict = await verifyAttestation(pk, att);   // fail-closed
+// verdict.ok === true, verdict.ref === "sha256:" + SHA-256(JCS(payload))
+```
+
+The envelope shape and JCS discipline match the keystone agent passport, so a
+verified attestation is also a content-addressed keystone record (its `ref` is the
+keystone reference of the payload) and composes with keystone tooling.
 
 ```ts
 import { initFalcon, falconKeygen, deriveFalconAddress, falconSign, falconVerify } from "algovoi-falcon";
