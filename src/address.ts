@@ -11,6 +11,7 @@
  * transactions to pool the byte budget (see buildFalconTxnGroup).
  */
 import algosdk from "algosdk";
+import { FALCON_PK_SIZE } from "./falcon.js";
 
 /**
  * Build the compiled PQ logic-sig program bytes.
@@ -18,16 +19,31 @@ import algosdk from "algosdk";
  *   offset | bytes           | teal opcode
  *   -------|-----------------|---------------------------
  *        0 | 0c              | #pragma version 12
- *        1 | 26 01 01 CC     | bytecblock 0xCC (counter byte)
+ *        1 | 26 01 01 <ctr>  | bytecblock <counter byte>
  *        5 | 31 17           | txn TxID
  *        7 | 2d              | arg 0 (Falcon signature)
  *        8 | 80 81 0e <PK>   | pushbytes <1793-byte PK>
  *     1804 | 85              | falcon_verify
+ *
+ * The `pushbytes` length prefix (80 81 0e) is a fixed varuint(1793), so `pk`
+ * MUST be exactly FALCON_PK_SIZE bytes: a wrong length would desynchronise the
+ * length prefix from the embedded key, yielding a malformed program and a
+ * silently different (unusable) address. Reject it rather than derive garbage.
+ *
+ * The counter byte is embedded in an (otherwise unused) bytecblock purely so a
+ * different counter yields different program bytes, hence a different address,
+ * for defence-in-depth off-curve selection (see deriveFalconAddress).
  */
 export function buildFalconLogicSigProgram(pk: Uint8Array, counter = 0): Uint8Array {
+  if (pk.length !== FALCON_PK_SIZE) {
+    throw new Error(`Falcon public key must be ${FALCON_PK_SIZE} bytes, got ${pk.length}`);
+  }
+  if (!Number.isInteger(counter) || counter < 0 || counter > 0xff) {
+    throw new Error(`counter must be a byte (0-255), got ${counter}`);
+  }
   const header = new Uint8Array([
     0x0c,                   // #pragma version 12
-    0x26, 0x01, 0x01, 0x00, // bytecblock 0x00
+    0x26, 0x01, 0x01, 0x00, // bytecblock <counter byte> (patched below)
     0x31, 0x17,             // txn TxID
     0x2d,                   // arg 0
     0x80, 0x81, 0x0e,       // pushbytes varuint(1793)
