@@ -1,6 +1,6 @@
 # algovoi-falcon
 
-**Falcon-1024 (FIPS 206) keys, post-quantum accounts and chain-neutral
+**Falcon-1024 keys, post-quantum accounts and chain-neutral
 attestations.** Keygen, deterministic sign/verify, `falcon_verify` LogicSig
 address derivation for Algorand, and a chain-neutral attestation layer that binds
 a post-quantum signature to an action on the settlement chain and verifies it offline. A
@@ -64,10 +64,11 @@ larger than the 1000-byte limit, so it is grouped with dummy transactions).
 ## Runtime-agnostic loading
 
 You provide the `falcon.wasm` bytes to `initFalcon`, so the same code runs in a
-browser, a browser extension, a web worker, or Node. Pin the binary if you like:
+browser, a browser extension, a web worker, or Node. Pin the binary if you like
+— this is the SHA-256 of the `wasm/falcon.wasm` shipped in this package:
 
 ```ts
-await initFalcon(wasmBytes, "311d79abcfca3898cce53c3b120dfe1acde0dc180716ff48dfdf159ba09650f8");
+await initFalcon(wasmBytes, "556a2f61163f786288952704210c5cc5e158a60f6103c680b852da8fbb7ef922");
 ```
 
 ## Notes and caveats
@@ -84,6 +85,15 @@ await initFalcon(wasmBytes, "311d79abcfca3898cce53c3b120dfe1acde0dc180716ff48dfd
 - **Seed backup.** `falconKeygen` returns the 48-byte seed; store it to recover
   the account. The secret key is 2305 bytes, so a compact seed backup is
   preferable to storing the raw key.
+- **Standardisation.** Falcon is the lattice scheme NIST selected for
+  standardisation as FN-DSA (draft FIPS 206). The bundled binary implements
+  Algorand's *deterministic* Falcon-1024 variant — the format the AVM
+  `falcon_verify` opcode checks — which is not identical to the FN-DSA standard.
+- **Attestation payloads.** For canonicalisation to be unambiguous, attestation
+  payloads are restricted to the JSON subset of strings, booleans, null, arrays,
+  objects, and **integers** (a safe-integer `number` or a `bigint`). Non-integer
+  or non-finite numbers are rejected rather than guessed at, so signer and
+  verifier always agree on the canonical bytes.
 
 ## The WASM binary: provenance and license
 
@@ -115,7 +125,7 @@ This repository is one of a set of AlgoVoi projects for Algorand and Voi settlem
 | Repository | Role |
 |---|---|
 | [avm-proofpack](https://github.com/chopmob-cloud/avm-proofpack) | Portable, offline-verifiable Algorand/Voi transaction evidence anchored in State Proofs — the shared evidence core. |
-| **[avm-algovoi-falcon](https://github.com/chopmob-cloud/avm-algovoi-falcon)** | Falcon-1024 (FIPS 206) post-quantum keys, Algorand `falcon_verify` LogicSig accounts and offline attestations — the identity layer. |
+| **[avm-algovoi-falcon](https://github.com/chopmob-cloud/avm-algovoi-falcon)** | Falcon-1024 post-quantum keys, Algorand `falcon_verify` LogicSig accounts and offline attestations — the identity layer. |
 | [avm-voi-algo-bridge](https://github.com/chopmob-cloud/avm-voi-algo-bridge) | VOI → Algorand mainnet bridge: on-chain log validator, escrow and relayer. |
 | [avm-algo-voi-bridge](https://github.com/chopmob-cloud/avm-algo-voi-bridge) | Algorand → VOI mainnet bridge (reverse direction). |
 | [avm-wormhole-ntt-relayer](https://github.com/chopmob-cloud/avm-wormhole-ntt-relayer) | Wormhole NTT relayer bridging tokens between Algorand and Base. |

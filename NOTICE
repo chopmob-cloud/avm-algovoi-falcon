@@ -7,8 +7,9 @@ authored by AlgoVoi and licensed under the Apache License, Version 2.0.
 
 The bundled WebAssembly binary (wasm/falcon.wasm) is an Emscripten build of the
 Algorand Falcon-1024 C library (github.com/algorand/falcon), which is provided
-under the MIT license. The Falcon signature scheme is standardised as
-FIPS 206 (FN-DSA).
+under the MIT license. Falcon is the basis for NIST's FN-DSA standard (draft
+FIPS 206); this binary implements Algorand's deterministic Falcon-1024 variant,
+which is not identical to the FN-DSA standard.
 
 -------------------------------------------------------------------------------
 Falcon reference / Algorand Falcon C library (compiled into wasm/falcon.wasm)

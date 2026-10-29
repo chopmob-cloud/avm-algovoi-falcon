@@ -1,7 +1,7 @@
 {
   "name": "algovoi-falcon",
-  "version": "0.1.0",
-  "description": "Falcon-1024 (FIPS 206) keys and Algorand post-quantum accounts: keygen, deterministic sign/verify, and falcon_verify LogicSig address derivation. Standalone, runtime-agnostic.",
+  "version": "0.2.0",
+  "description": "Falcon-1024 keys, Algorand post-quantum accounts and chain-neutral attestations: keygen, deterministic sign/verify, falcon_verify LogicSig address derivation, and offline JCS attestations. Standalone, runtime-agnostic.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

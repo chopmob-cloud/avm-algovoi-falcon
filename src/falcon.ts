@@ -54,6 +54,11 @@ function mod() {
 export function falconKeygen(seed?: Uint8Array): { pk: Uint8Array; sk: Uint8Array; seed: Uint8Array } {
   const m = mod();
   const actualSeed = seed ?? crypto.getRandomValues(new Uint8Array(48));
+  // The seed is copied into a fixed 48-byte WASM allocation below; reject any
+  // other length rather than letting HEAPU8.set() run off the end of it.
+  if (actualSeed.length !== 48) {
+    throw new Error(`Falcon keygen: seed must be 48 bytes, got ${actualSeed.length}`);
+  }
   const seedPtr = m._malloc(48);
   const pkPtr = m._malloc(FALCON_PK_SIZE);
   const skPtr = m._malloc(FALCON_SK_SIZE);
@@ -77,6 +82,11 @@ export function falconKeygen(seed?: Uint8Array): { pk: Uint8Array; sk: Uint8Arra
 /** Sign a message with Falcon-1024 (deterministic compressed signature). */
 export function falconSign(sk: Uint8Array, msg: Uint8Array): Uint8Array {
   const m = mod();
+  // sk is copied into a fixed FALCON_SK_SIZE allocation; a longer input would
+  // overflow it into adjacent WASM heap, so reject a wrong-sized key up front.
+  if (sk.length !== FALCON_SK_SIZE) {
+    throw new Error(`Falcon sign: secret key must be ${FALCON_SK_SIZE} bytes, got ${sk.length}`);
+  }
   const sigMax: number = m.ccall("falcon_wasm_sig_maxsize", "number", [], []);
   const skPtr = m._malloc(FALCON_SK_SIZE);
   const msgPtr = m._malloc(msg.length);
@@ -100,6 +110,11 @@ export function falconSign(sk: Uint8Array, msg: Uint8Array): Uint8Array {
 /** Verify a Falcon-1024 compressed signature. */
 export function falconVerify(pk: Uint8Array, msg: Uint8Array, sig: Uint8Array): boolean {
   const m = mod();
+  // pk is copied into a fixed FALCON_PK_SIZE allocation. A caller may pass an
+  // untrusted public key here, so a wrong length is not a programming error to
+  // throw on but an invalid input to reject: fail closed and do not let an
+  // oversized key run HEAPU8.set() off the end of its allocation.
+  if (pk.length !== FALCON_PK_SIZE) return false;
   const pkPtr = m._malloc(FALCON_PK_SIZE);
   const msgPtr = m._malloc(msg.length);
   const sigPtr = m._malloc(sig.length);
