@@ -1,5 +1,8 @@
 # algovoi-falcon
 
+
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
+
 **Falcon-1024 keys, post-quantum accounts and chain-neutral
 attestations.** Keygen, deterministic sign/verify, `falcon_verify` LogicSig
 address derivation for Algorand, and a chain-neutral attestation layer that binds
