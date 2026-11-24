@@ -1,6 +1,6 @@
 # algovoi-falcon
 
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE) [![avm-algo-voi-bridge](https://img.shields.io/badge/avm--algo--voi--bridge-8A2BE2)](https://github.com/chopmob-cloud/avm-algo-voi-bridge) [![avm-hbar-bridge-relayer](https://img.shields.io/badge/avm--hbar--bridge--relayer-8A2BE2)](https://github.com/chopmob-cloud/avm-hbar-bridge-relayer) [![avm-proofpack](https://img.shields.io/badge/avm--proofpack-8A2BE2)](https://github.com/chopmob-cloud/avm-proofpack) [![avm-voi-algo-bridge](https://img.shields.io/badge/avm--voi--algo--bridge-8A2BE2)](https://github.com/chopmob-cloud/avm-voi-algo-bridge) [![avm-wormhole-ntt-relayer](https://img.shields.io/badge/avm--wormhole--ntt--relayer-8A2BE2)](https://github.com/chopmob-cloud/avm-wormhole-ntt-relayer)
 
 **Falcon-1024 keys, post-quantum accounts and chain-neutral
 attestations.** Keygen, deterministic sign/verify, `falcon_verify` LogicSig
